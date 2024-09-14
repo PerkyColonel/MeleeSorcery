@@ -2,13 +2,17 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 
-	"fyne.io/fyne/app"
-	"fyne.io/fyne/container"
-	"fyne.io/fyne/widget"
 	"github.com/Shopify/go-lua"
+	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
+func init() {
+	// This is needed to arrange that main() runs on main thread.
+	// See documentation for functions that are only allowed to be called from the main thread.
+	runtime.LockOSThread()
+}
 func main() {
 
 	binnenkaas := lua.Function(
@@ -18,20 +22,21 @@ func main() {
 		},
 	)
 
-	openWindow := lua.Function(
+	openGLFWindow := lua.Function(
 		func(state *lua.State) int {
-			a := app.New()
-			w := a.NewWindow("Hello")
+			err := glfw.Init()
+			if err != nil {
+				panic(err)
+			}
+			defer glfw.Terminate()
 
-			hello := widget.NewLabel("Hello Fyne!")
-			w.SetContent(container.NewVBox(
-				hello,
-				widget.NewButton("Hi!", func() {
-					hello.SetText("Welcome :)")
-				}),
-			))
+			window, err := glfw.CreateWindow(640, 480, "Testing", nil, nil)
+			if err != nil {
+				panic(err)
+			}
 
-			w.ShowAndRun()
+			window.MakeContextCurrent()
+			windowLoop(window)
 			return 0
 		},
 	)
@@ -39,11 +44,19 @@ func main() {
 	luaState := lua.NewState()
 	lua.BaseOpen(luaState)
 
-	ExposableFunctions := []lua.RegistryFunction{{Name: "testFuncti", Function: binnenkaas}, {Name: "openWindow", Function: openWindow}}
+	ExposableFunctions := []lua.RegistryFunction{{Name: "testFuncti", Function: binnenkaas}, {Name: "openWindow", Function: openGLFWindow}}
 
 	lua.OpenLibraries(luaState)
 	lua.SetFunctions(luaState, ExposableFunctions, 0)
 	if err := lua.DoFile(luaState, "game.lua"); err != nil {
 		panic(err)
+	}
+}
+
+func windowLoop(window *glfw.Window) {
+	for !window.ShouldClose() {
+		// Do OpenGL stuff.
+		window.SwapBuffers()
+		glfw.PollEvents()
 	}
 }
