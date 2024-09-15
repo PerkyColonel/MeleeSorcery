@@ -6,7 +6,6 @@ import (
 
 	setupOpenGL "github.com/PerkyColonel/MeleeSorcery/tree/main/window"
 	"github.com/Shopify/go-lua"
-	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
 func init() {
@@ -25,19 +24,7 @@ func main() {
 
 	openGLFWindow := lua.Function(
 		func(state *lua.State) int {
-			err := glfw.Init()
-			if err != nil {
-				panic(err)
-			}
-			defer glfw.Terminate()
-
-			window, err := glfw.CreateWindow(640, 480, "Testing", nil, nil)
-			if err != nil {
-				panic(err)
-			}
-
-			window.MakeContextCurrent()
-			windowLoop(window)
+			setupOpenGL.Startup()
 			return 0
 		},
 	)
@@ -53,13 +40,5 @@ func main() {
 		panic(err)
 	}
 
-	setupOpenGL.Startup()
-}
-
-func windowLoop(window *glfw.Window) {
-	for !window.ShouldClose() {
-		// Do OpenGL stuff.
-		window.SwapBuffers()
-		glfw.PollEvents()
-	}
+	// setupOpenGL.Startup()
 }

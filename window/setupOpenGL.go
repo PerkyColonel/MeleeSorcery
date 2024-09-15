@@ -1,4 +1,4 @@
-package setupOpenGL
+package Window
 
 import (
 	"fmt"
@@ -65,7 +65,7 @@ func setupWindowAndContext() {
 
 	vao := makeVao(triangle)
 	for !window.ShouldClose() {
-		draw(vao, window, program)
+		Drawing.draw(vao, window, program)
 	}
 }
 
@@ -139,15 +139,4 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 	}
 
 	return shader, nil
-}
-
-func draw(vao uint32, window *glfw.Window, program uint32) {
-	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	gl.UseProgram(program)
-
-	gl.BindVertexArray(vao)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(triangle)/3))
-
-	glfw.PollEvents()
-	window.SwapBuffers()
 }
