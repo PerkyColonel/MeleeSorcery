@@ -65,7 +65,8 @@ func setupWindowAndContext() {
 
 	vao := makeVao(triangle)
 	for !window.ShouldClose() {
-		Drawing.draw(vao, window, program)
+		shapeArray := [][]float32{triangle}
+		Drawing.gldraw(shapeArray, vao, window, program)
 	}
 }
 
