@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime"
 
+	setupOpenGL "github.com/PerkyColonel/MeleeSorcery/tree/main/window"
 	"github.com/Shopify/go-lua"
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
@@ -51,6 +52,8 @@ func main() {
 	if err := lua.DoFile(luaState, "game.lua"); err != nil {
 		panic(err)
 	}
+
+	setupOpenGL.Startup()
 }
 
 func windowLoop(window *glfw.Window) {
