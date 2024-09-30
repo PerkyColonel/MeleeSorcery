@@ -3,33 +3,59 @@ package Window
 import (
 	"fmt"
 	"log"
+	"os"
 	"runtime"
 	"strings"
 
+	"github.com/PerkyColonel/MeleeSorcery/tree/main/drawing"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
-const (
-	vertexShaderSource = `
-	#version 410
-	in vec3 vp;
-	void main() {
-		gl_Position = vec4(vp, 1.0);
-	}
-` + "\x00"
+// const (
+// 	vertexShaderSource = `
+// 	#version 410
+// 	in vec3 vp;
+// 	void main() {
+// 		gl_Position = vec4(vp, 1.0);
+// 	}
+// ` + "\x00"
 
-	fragmentShaderSource = `
-	#version 410
-	out vec4 frag_colour;
-	void main() {
-		frag_colour = vec4(1, 1, 1, 1);
-	}
-` + "\x00"
+// 	fragmentShaderSource = `
+// 	#version 410
+// 	out vec4 frag_colour;
+// 	void main() {
+// 		frag_colour = vec4(1, 1, 1, 1);
+// 	}
+// ` + "\x00"
+// )
+
+var (
+	vertexShaderSource   string
+	fragmentShaderSource string
 )
 
 func Startup() {
+	openShaders()
 	setupWindowAndContext()
+}
+
+func openShaders() {
+
+	fragmentShaderSource = openfile("./shaders/fragmentshaders/basicfragshader.frag")
+
+	vertexShaderSource = openfile("./shaders/vertexshaders/basicvertshader.vert")
+
+	fmt.Println(vertexShaderSource)
+}
+
+func openfile(path string) string {
+	shader, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("unable to read file: %v", err)
+	}
+
+	return string(shader)
 }
 
 func initOpenGL() uint32 {
@@ -55,6 +81,14 @@ func initOpenGL() uint32 {
 	return prog
 }
 
+var (
+	triangle = []float32{
+		0, 0.2, 0, // top
+		-0.2, -0.2, 0, // left
+		0.2, -0.2, 0, // right
+	}
+)
+
 func setupWindowAndContext() {
 	runtime.LockOSThread()
 
@@ -63,10 +97,20 @@ func setupWindowAndContext() {
 
 	program := initOpenGL()
 
-	vao := makeVao(triangle)
+	// allTestShapes := [][]float32{triangle}
+
+	drawing.SetWindow(window)
+	drawing.SetProgram(program)
+
+	drawing.AddQuad(0, 0, 0, 0)
+	// drawing.AddQuad(2, 2, 1, 1)
+
+	// vao := drawing.MakeVao(triangle)
+
 	for !window.ShouldClose() {
-		shapeArray := [][]float32{triangle}
-		Drawing.gldraw(shapeArray, vao, window, program)
+
+		drawing.DrawAllQuads()
+
 	}
 }
 
@@ -85,38 +129,13 @@ func initGlfw() *glfw.Window {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
-	window, err := glfw.CreateWindow(width, height, "Conway's Game of Life", nil, nil)
+	window, err := glfw.CreateWindow(width, height, "Cliffhanger_enjin", nil, nil)
 	if err != nil {
 		panic(err)
 	}
 	window.MakeContextCurrent()
 
 	return window
-}
-
-var (
-	triangle = []float32{
-		0, 0.2, 0, // top
-		-0.2, -0.2, 0, // left
-		0.2, -0.2, 0, // right
-	}
-)
-
-// makeVao initializes and returns a vertex array from the points provided.
-func makeVao(points []float32) uint32 {
-	var vbo uint32
-	gl.GenBuffers(1, &vbo)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.STATIC_DRAW)
-
-	var vao uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
-	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, nil)
-
-	return vao
 }
 
 func compileShader(source string, shaderType uint32) (uint32, error) {
