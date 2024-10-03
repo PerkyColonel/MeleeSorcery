@@ -20,12 +20,12 @@ func SetProgram(program uint32) {
 	Program = program
 }
 
-func Gldraw(vao uint32, shapes [][]float32) {
+func Gldraw(vao uint32, shapes []float32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.UseProgram(Program)
 
 	gl.BindVertexArray(vao)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(shapes[0])/3))
+	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(shapes)/3))
 
 	glfw.PollEvents()
 	Window.SwapBuffers()
@@ -35,7 +35,7 @@ func MakeVao(points []float32) uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.DYNAMIC_DRAW)
 
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)

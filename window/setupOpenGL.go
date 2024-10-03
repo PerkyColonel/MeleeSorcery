@@ -46,7 +46,6 @@ func openShaders() {
 
 	vertexShaderSource = openfile("./shaders/vertexshaders/basicvertshader.vert")
 
-	fmt.Println(vertexShaderSource)
 }
 
 func openfile(path string) string {
@@ -80,14 +79,6 @@ func initOpenGL() uint32 {
 	gl.LinkProgram(prog)
 	return prog
 }
-
-var (
-	triangle = []float32{
-		0, 0.2, 0, // top
-		-0.2, -0.2, 0, // left
-		0.2, -0.2, 0, // right
-	}
-)
 
 func setupWindowAndContext() {
 	runtime.LockOSThread()

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"runtime"
 
 	"github.com/PerkyColonel/MeleeSorcery/tree/main/drawing"
@@ -19,8 +18,6 @@ func main() {
 	binnenkaas := lua.Function(
 		func(state *lua.State) int {
 			// state.Field(0, "Waa")
-			fmt.Println(state.ToValue(1))
-			fmt.Println(state.ToValue(2))
 
 			return 0
 		},
@@ -28,12 +25,10 @@ func main() {
 
 	drawQuadrino := lua.Function(
 		func(state *lua.State) int {
-			x, xerr := state.ToNumber(1)
-			y, yerr := state.ToNumber(2)
-			w, werr := state.ToNumber(3)
-			h, herr := state.ToNumber(4)
-
-			fmt.Println(xerr, yerr, werr, herr)
+			x, _ := state.ToNumber(1)
+			y, _ := state.ToNumber(2)
+			w, _ := state.ToNumber(3)
+			h, _ := state.ToNumber(4)
 
 			drawing.AddQuad(x, y, w, h)
 			return 0

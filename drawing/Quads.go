@@ -34,8 +34,7 @@ func AddQuad(x float64, y float64, width float64, height float64) {
 func DrawAllQuads() {
 
 	vao := MakeVao(QuadsToVertices())
-	allVertices := [][]float32{QuadsToVertices()}
-	Gldraw(vao, allVertices)
+	Gldraw(vao, QuadsToVertices())
 
 }
 
@@ -44,20 +43,14 @@ func QuadsToVertices() []float32 {
 	for i := 0; i < len(allQuads); i++ {
 		q := allQuads[i]
 		returnVertexArray = append(returnVertexArray,
-			Modifier(-0.1, q.x, q.width), Modifier(0.1, q.y, q.height), 0,
-			Modifier(0.1, q.x, q.width), Modifier(0.1, q.y, q.height), 0,
-			Modifier(-0.1, q.x, q.width), Modifier(-0.1, q.y, q.height), 0,
+			(q.x - q.width/2), (q.y + q.height/2), 0,
+			(q.x + q.width/2), (q.y + q.height/2), 0,
+			(q.x - q.width/2), (q.y - q.height/2), 0,
 
-			Modifier(0.1, q.x, q.width), Modifier(0.1, q.y, q.height), 0,
-			Modifier(-0.1, q.x, q.width), Modifier(-0.1, q.y, q.height), 0,
-			Modifier(0.1, q.x, q.width), Modifier(-0.1, q.y, q.height), 0,
-		)
+			(q.x + q.width/2), (q.y + q.height/2), 0,
+			(q.x - q.width/2), (q.y - q.height/2), 0,
+			(q.x + q.width/2), (q.y - q.height/2), 0)
 	}
 
 	return returnVertexArray
-}
-
-func Modifier(base float32, pos float32, width float32) float32 {
-
-	return base + (pos * (width / 2))
 }
